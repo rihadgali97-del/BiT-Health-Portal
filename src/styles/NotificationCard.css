@@ -1,0 +1,126 @@
+/* Notification Card Styles */
+.notification-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.notification-card.unread {
+    background: #f0f9ff;
+    border-color: #0ea5e9;
+}
+
+.notification-card.priority-high {
+    border-left: 4px solid #ef4444;
+}
+
+.notification-card.priority-medium {
+    border-left: 4px solid #f59e0b;
+}
+
+.notification-card.priority-low {
+    border-left: 4px solid #10b981;
+}
+
+.notification-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.notification-icon {
+    font-size: 1.5rem;
+    padding: 10px;
+    background: #f7fafc;
+    border-radius: 8px;
+    min-width: 50px;
+    text-align: center;
+}
+
+.notification-content {
+    flex: 1;
+}
+
+.notification-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.notification-title {
+    margin: 0;
+    color: #1a365d;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.notification-time {
+    color: #718096;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.notification-message {
+    margin: 0;
+    color: #4a5568;
+    line-height: 1.5;
+}
+
+.notification-actions {
+    margin-top: 12px;
+}
+
+.action-btn {
+    background: #1a365d;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.action-btn:hover {
+    background: #2d9cdb;
+}
+
+.notification-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control-btn {
+    background: transparent;
+    border: 1px solid #e2e8f0;
+    padding: 6px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+}
+
+.control-btn.mark-read {
+    color: #10b981;
+}
+
+.control-btn.mark-read:hover {
+    background: #10b981;
+    color: white;
+}
+
+.control-btn.delete {
+    color: #ef4444;
+}
+
+.control-btn.delete:hover {
+    background: #ef4444;
+    color: white;
+}

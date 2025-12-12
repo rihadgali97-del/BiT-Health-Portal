@@ -1,0 +1,220 @@
+.staff-dashboard-container {
+    min-height: 100vh;
+    background: #f5f7fa;
+}
+
+.staff-dashboard-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.staff-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.staff-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.staff-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #1976d2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+}
+
+.staff-role {
+    background: #e8f5e8;
+    color: #2e7d32;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.staff-profile-card {
+    background: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.profile-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 10px;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.staff-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.staff-tabs .tab-btn {
+    padding: 12px 20px;
+    border: none;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.staff-tabs .tab-btn.active {
+    background: #1976d2;
+    color: white;
+}
+
+.staff-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 24px;
+}
+
+.stat-content h3 {
+    margin: 0;
+    font-size: 24px;
+    color: #2c3e50;
+}
+
+.stat-content p {
+    margin: 5px 0 0 0;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.status-critical {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.status-waiting {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.status-stable {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.patient-info-section {
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border-left: 4px solid #1976d2;
+}
+/* Receptionist Specific Styles */
+.checkin-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: capitalize;
+}
+
+.checkin-checked {
+    background: #e8f5e8;
+    color: #2e7d32;
+}
+
+.checkin-waiting {
+    background: #fff3e0;
+    color: #ef6c00;
+}
+
+.checkin-not-arrived {
+    background: #f5f5f5;
+    color: #757575;
+}
+
+.waiting-room-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.waiting-patient-card {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-left: 4px solid #4CAF50;
+}
+
+.waiting-patient-card .patient-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.waiting-patient-card .patient-details {
+    margin-bottom: 15px;
+}
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.waiting-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.appointment-type {
+    background: #e3f2fd;
+    color: #1976d2;
+    padding: 2px 6px;
+    border-radius: 8px;
+    font-size: 11px;
+}

@@ -1,0 +1,149 @@
+/* Header wrapper behind the navbar */
+.header-section {
+    background: linear-gradient(135deg, #1a365d 0%, #2d9cdb 100%);
+    padding: 20px 0;
+}
+
+/* Make logo text white only when navbar is inside header-section */
+.header-section .logo h2 {
+    color: white;
+}
+
+/* Navigation Bar */
+.navbar {
+    background: #2d9cdb;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0; /* Reduced padding */
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+/* Add this - Image logo styling */
+.logo-image {
+    height: 50px; /* Fixed height */
+    width: auto; /* Maintain aspect ratio */
+    max-width: 200px; /* Don't let it get too wide */
+    object-fit: contain; /* Keep image proportions */
+}
+
+/* Remove or update the logo-icon class since we're using image */
+.logo-icon {
+    display: none; /* Hide the emoji since we're using image */
+}
+
+.logo h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    white-space: nowrap;
+}
+
+/* Nav links */
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* Reduced gap */
+}
+
+.nav-link {
+    background: none;
+    border: none;
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.3s;
+    font-size: 16px; /* Slightly smaller */
+    padding: 5px 0;
+    white-space: nowrap;
+}
+
+.nav-link:hover {
+    color: #ffcc00; /* Changed to better contrast color */
+}
+
+/* Buttons */
+.btn {
+    padding: 8px 16px; /* Smaller button */
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #1a365d;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #2d9cdb;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 10px 15px;
+    }
+
+    .logo-image {
+        height: 40px; /* Smaller on medium screens */
+    }
+
+    .logo h2 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .nav-link {
+        font-size: 14px;
+        padding: 3px 8px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .logo {
+        gap: 8px;
+    }
+
+    .logo-image {
+        height: 35px;
+    }
+
+    .logo h2 {
+        font-size: 1rem;
+    }
+}
