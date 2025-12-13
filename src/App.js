@@ -30,40 +30,23 @@ function App() {
     const [currentPage, setCurrentPage] = useState('home');
     const [user, setUser] = useState(null);
 
-    const USER_ROLES = {
-        "rihadgali97@gmail.com": "admin",   // << YOU ARE ADMIN
-        // Add more special cases:
-        "john.doctor@gmail.com": "doctor",
-        "nurse.mary@gmail.com": "nurse"
-    };
-
-    const detectUserType = (email) => {
-        const emailLower = email.toLowerCase();
-
-        // 1. If email is in predefined role list, use it
-        if (USER_ROLES[emailLower]) {
-            console.log("Detected special user:", emailLower, "→", USER_ROLES[emailLower]);
-            return USER_ROLES[emailLower];
-        }
-
-        // 2. Otherwise fallback to your domain rules
-        if (emailLower.includes("@admin.")) return "admin";
-        if (emailLower.includes("@doctor.") || emailLower.includes(".dr@")) return "doctor";
-        if (emailLower.includes("@nurse.")) return "nurse";
-        if (emailLower.includes("@reception.")) return "receptionist";
-        if (emailLower.includes("@pharmacy.")) return "pharmacist";
-        if (emailLower.includes("@lab.")) return "lab_technician";
-
-        // 3. Default role
-        return "student";
-    };
+    // NOTE: Removed the redundant detectUserType function from App.js
+    // as the role is now determined by the LoginForm component.
 
     const handleLogin = (userData) => {
         console.log('🔐 Login received:', userData);
         setUser(userData);
 
-        const userType = detectUserType(userData.email);
+        // 💡 THE FIX: Use the 'type' property that the LoginForm calculated
+        const userType = userData.type; 
+        
+        if (!userType) {
+            console.error("User data missing type property. Defaulting to student.");
+            setCurrentPage('student-dashboard');
+            return;
+        }
 
+        // Sets the page to 'admin-dashboard', 'doctor-dashboard', or 'student-dashboard'
         console.log('Setting page to:', `${userType}-dashboard`);
         setCurrentPage(`${userType}-dashboard`);
     };
@@ -72,10 +55,7 @@ function App() {
     const handleRegister = (userData) => {
         console.log('📝 Register received:', userData);
         setUser(userData);
-
-        // Always go to student dashboard after registration for now
-        console.log('Setting page to: student-dashboard');
-        setCurrentPage('student-dashboard');
+        setCurrentPage('student-dashboard'); // Default to student dashboard after registration
     };
 
     const handleLogout = () => {
@@ -104,21 +84,33 @@ function App() {
             case 'home':
                 return <Home {...commonProps} />;
             case 'login':
+                // Pass the handleLogin function to the Login component
                 return <Login {...commonProps} onLogin={handleLogin} />;
             case 'register':
                 return <Register {...commonProps} onRegister={handleRegister} />;
+            // --- DASHBOARDS (Will be hit correctly by the fix) ---
             case 'student-dashboard':
                 return <StudentDashboard {...commonProps} />;
+            case 'doctor-dashboard':
+                return <DoctorDashboard {...commonProps} />;
+            case 'admin-dashboard':
+                return <AdminDashboard {...commonProps} />;
+            case 'nurse-dashboard':
+                return <NurseDashboard {...commonProps} />;
+            case 'receptionist-dashboard':
+                return <ReceptionistDashboard {...commonProps} />;
+            case 'pharmacist-dashboard':
+                return <PharmacistDashboard {...commonProps} />;
+            case 'lab-technician-dashboard':
+                return <LabTechnicianDashboard {...commonProps} />;
+            // --- END DASHBOARDS ---
+                
             case 'book-appointment':
                 return <BookAppointment {...commonProps} />;
             case 'health-records':
                 return <HealthRecords {...commonProps} />;
             case 'my-appointments':
                 return <MyAppointments {...commonProps} />;
-            case 'doctor-dashboard':
-                return <DoctorDashboard {...commonProps} />;
-            case 'admin-dashboard':
-                return <AdminDashboard {...commonProps} />;
             case 'manage-users':
                 return <ManageUsers {...commonProps} />;
             case 'manage-doctors':
@@ -145,14 +137,6 @@ function App() {
                 return <StudentNotifications {...commonProps} />;
             case 'doctor-notifications':
                 return <DoctorNotifications {...commonProps} />;
-            case 'nurse-dashboard':
-                return <NurseDashboard {...commonProps} />;
-            case 'receptionist-dashboard':
-                return <ReceptionistDashboard {...commonProps} />;
-            case 'pharmacist-dashboard':
-                return <PharmacistDashboard {...commonProps} />;
-            case 'lab-technician-dashboard':
-                return <LabTechnicianDashboard {...commonProps} />;
             default:
                 console.log('Unknown page, defaulting to home');
                 return <Home {...commonProps} />;
@@ -161,7 +145,7 @@ function App() {
 
     return (
         <div className="App">
-            {/* Debug header */}
+            {/* Debug header (shows current status) */}
             <div style={{
                 padding: '5px 10px',
                 backgroundColor: '#f0f0f0',
@@ -169,7 +153,7 @@ function App() {
                 borderBottom: '1px solid #ccc'
             }}>
                 Current: {currentPage} |
-                {user ? ` User: ${user.email || 'No email'}` : ' No user'}
+                {user ? ` User: ${user.email || 'No email'} (Type: ${user.type || 'N/A'})` : ' No user'}
             </div>
 
             {renderPage()}

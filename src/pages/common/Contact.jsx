@@ -24,7 +24,7 @@ const Contact = ({ navigateTo }) => {
                                     <div className="contact-icon">📍</div>
                                     <div>
                                         <h4>Health Center Location</h4>
-                                        <p>BiT Campus, Building A, Floor 2</p>
+                                        <p>BiT Campus, Building Ghon, Floor 2, 2xx</p>
                                     </div>
                                 </div>
                                 <div className="contact-item">
