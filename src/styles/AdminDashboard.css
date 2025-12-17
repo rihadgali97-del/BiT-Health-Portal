@@ -1,6 +1,6 @@
 /* Admin Dashboard Styles */
 .admin-dashboard-container {
-    min-height: 100vh;
+    min-height: 70vh;
     background: linear-gradient(135deg, #1a365d 0%, #2d9cdb 100%);
     padding: 20px;
 }
@@ -691,4 +691,55 @@
 .status-item span {
     color: #666;
     font-size: 14px;
+}
+/* --- Action Button Styles (Specific to Approve and Cancel) --- */
+
+/* Base style for all action buttons */
+.btn-action {
+    padding: 6px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.2s, box-shadow 0.2s; /* Smooth transitions for hover */
+    white-space: nowrap; /* Prevents text wrap on small buttons */
+}
+
+/* 1. Approve Button (Green/Success Color) */
+.btn-approve {
+    background-color: #28a745; /* Bootstrap Success Green */
+    color: white;
+}
+
+.btn-approve:hover {
+    background-color: #1e7e34; /* Darker Green on hover */
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.4); /* Subtle shadow for lift effect */
+}
+
+/* 2. Cancel Button (Red/Danger Color) */
+.btn-cancel {
+    background-color: #dc3545; /* Bootstrap Danger Red */
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #c82333; /* Darker Red on hover */
+    box-shadow: 0 2px 4px rgba(220, 53, 69, 0.4); /* Subtle shadow for lift effect */
+}
+
+/* Optional: Disabled state style (inherited from previous full example) */
+.btn-disabled {
+    background-color: #adb5bd; /* Gray */
+    color: #6c757d;
+    cursor: not-allowed;
+}
+.btn-view {
+    background-color: #3498db; /* Bootstrap Primary Blue */
+    color: white;
+}
+
+.btn-view:hover {
+    background-color: #0056b3; /* Darker Blue on hover */
+    box-shadow: 0 2px 4px rgba(0, 123, 255, 0.4); /* Subtle shadow for lift effect */
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import logoImage from '../../assets/img.png';
+import logoImage from 'public\favicon.ico';
 
 const Logo = ({ size = 'medium' }) => {
     const sizes = {
@@ -10,7 +10,7 @@ const Logo = ({ size = 'medium' }) => {
 
     return (
         <img
-            src={Logo}
+            src={logoImage}
             alt="Bahir Dar University Logo"
             style={{
                 height: sizes[size],

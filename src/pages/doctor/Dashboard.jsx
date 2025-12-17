@@ -1,3 +1,5 @@
+// src/pages/DoctorDashboard.jsx (Updated Component)
+
 import React, { useState } from 'react';
 import '../../styles/DoctorDashboard.css';
 import PrescriptionModal from '../../components/doctor/PrescriptionModal';
@@ -8,7 +10,18 @@ import DashboardOverview from '../../components/doctor/DashboardOverview';
 import AppointmentsView from '../../components/doctor/AppointmentsView';
 import PatientsView from '../../components/doctor/PatientsView';
 
+// --- IMPORT DATA ---
+import {
+    DOCTOR_PROFILE,
+    INITIAL_APPOINTMENTS,
+    INITIAL_PATIENT_RECORDS,
+    AVAILABLE_TIME_SLOTS,
+    SPECIALIST_OPTIONS
+} from '../../Data/doctorSampleData';
+// -------------------
+
 const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
+    // --- State Management ---
     const [activeTab, setActiveTab] = useState('overview');
     const [searchTerm, setSearchTerm] = useState('');
     const [showRescheduleModal, setShowRescheduleModal] = useState(false);
@@ -20,10 +33,15 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
     const [newAppointmentDate, setNewAppointmentDate] = useState('');
     const [newAppointmentTime, setNewAppointmentTime] = useState('');
 
+    // State initialized with imported data
+    const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
+    const [patientRecords, setPatientRecords] = useState(INITIAL_PATIENT_RECORDS);
     const [prescriptions, setPrescriptions] = useState([]);
     const [medicalNotes, setMedicalNotes] = useState([]);
 
-    const [prescriptionData, setPrescriptionData] = useState({
+    // --- Modal Data State Initialization ---
+
+    const initialPrescriptionState = {
         patientId: '',
         patientName: '',
         medication: '',
@@ -32,9 +50,10 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
         duration: '',
         instructions: '',
         date: new Date().toISOString().split('T')[0]
-    });
+    };
+    const [prescriptionData, setPrescriptionData] = useState(initialPrescriptionState);
 
-    const [medicalNoteData, setMedicalNoteData] = useState({
+    const initialMedicalNoteState = {
         patientId: '',
         patientName: '',
         date: new Date().toISOString().split('T')[0],
@@ -48,140 +67,27 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
             temperature: '',
             weight: ''
         }
-    });
+    };
+    const [medicalNoteData, setMedicalNoteData] = useState(initialMedicalNoteState);
 
-    const [referralData, setReferralData] = useState({
+    const initialReferralState = {
         reason: '',
         specialist: '',
         urgency: 'routine',
         medicalHistory: '',
         questions: '',
         notes: ''
-    });
-
-    const doctorProfile = {
-        name: 'Dr. Sarah Johnson',
-        specialty: 'General Physician',
-        email: 's.johnson@university.edu',
-        phone: '(555) 123-4567',
-        office: 'Health Center - Room 101',
-        schedule: 'Mon-Fri: 9:00 AM - 5:00 PM'
     };
+    const [referralData, setReferralData] = useState(initialReferralState);
 
-    const [appointments, setAppointments] = useState([
-        {
-            id: 1,
-            patientName: 'John Smith',
-            patientId: 'STU2024001',
-            date: '2024-02-15',
-            time: '10:00 AM',
-            status: 'scheduled',
-            type: 'Regular Checkup',
-            reason: 'Annual physical examination',
-            age: 21,
-            department: 'Computer Science'
-        },
-        {
-            id: 2,
-            patientName: 'Emily Chen',
-            patientId: 'STU2024002',
-            date: '2024-02-15',
-            time: '11:30 AM',
-            status: 'scheduled',
-            type: 'Follow-up',
-            reason: 'Cold and flu symptoms',
-            age: 20,
-            department: 'Engineering'
-        },
-        {
-            id: 3,
-            patientName: 'Michael Brown',
-            patientId: 'STU2024003',
-            date: '2024-02-14',
-            time: '2:15 PM',
-            status: 'completed',
-            type: 'Consultation',
-            reason: 'Sports injury assessment',
-            age: 22,
-            department: 'Business'
-        },
-        {
-            id: 4,
-            patientName: 'Sarah Wilson',
-            patientId: 'STU2024004',
-            date: '2024-02-14',
-            time: '3:45 PM',
-            status: 'completed',
-            type: 'Vaccination',
-            reason: 'Flu shot administration',
-            age: 19,
-            department: 'Arts'
-        }
-    ]);
-
-    const patientRecords = [
-        {
-            id: 1,
-            patientName: 'John Smith',
-            patientId: 'STU2024001',
-            lastVisit: '2024-01-15',
-            condition: 'Healthy',
-            nextAppointment: '2024-02-15',
-            notes: 'Regular checkup - all vitals normal'
-        },
-        {
-            id: 2,
-            patientName: 'Emily Chen',
-            patientId: 'STU2024002',
-            lastVisit: '2024-02-10',
-            condition: 'Upper respiratory infection',
-            nextAppointment: '2024-02-15',
-            notes: 'Prescribed antibiotics, follow-up scheduled'
-        },
-        {
-            id: 3,
-            patientName: 'Michael Brown',
-            patientId: 'STU2024003',
-            lastVisit: '2024-02-14',
-            condition: 'Complex cardiac symptoms',
-            nextAppointment: '2024-02-28',
-            notes: 'Referred to cardiology for further evaluation'
-        },
-        {
-            id: 4,
-            patientName: 'Sarah Wilson',
-            patientId: 'STU2024004',
-            lastVisit: '2024-02-14',
-            condition: 'Healthy',
-            nextAppointment: '2024-11-20',
-            notes: 'Flu shot administered, no adverse reactions'
-        }
-    ];
-
-    const availableTimeSlots = [
-        '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
-        '11:00 AM', '11:30 AM', '02:00 PM', '02:30 PM',
-        '03:00 PM', '03:30 PM', '04:00 PM'
-    ];
-
-    const specialistOptions = [
-        'Cardiologist',
-        'Neurologist',
-        'Orthopedic Surgeon',
-        'Psychiatrist',
-        'Dermatologist',
-        'Endocrinologist',
-        'Gastroenterologist',
-        'Oncologist',
-        'Rheumatologist',
-        'Pulmonologist'
-    ];
-
+    // Filter logic remains the same, operating on patientRecords state
     const filteredPatients = patientRecords.filter(patient =>
         searchTerm === '' ||
         patient.patientName.toLowerCase().includes(searchTerm.toLowerCase()) ||
         patient.condition.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    // --- Handler Functions ---
 
     const handleOpenReschedule = (appointment) => {
         setSelectedAppointment(appointment);
@@ -209,12 +115,7 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
 
     const handleOpenReferral = (patient) => {
         setSelectedPatient(patient);
-        setReferralData({
-            reason: '',
-            specialist: '',
-            urgency: 'routine',
-            notes: ''
-        });
+        setReferralData(initialReferralState); // Reset form data
         setShowReferralModal(true);
     };
 
@@ -227,7 +128,7 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
         console.log('Referral created:', {
             patient: selectedPatient,
             referral: referralData,
-            referringDoctor: doctorProfile.name,
+            referringDoctor: DOCTOR_PROFILE.name,
             date: new Date().toISOString().split('T')[0]
         });
 
@@ -238,17 +139,13 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
     const handleOpenPrescription = (patient = null) => {
         if (patient) {
             setPrescriptionData({
-                ...prescriptionData,
+                ...initialPrescriptionState,
                 patientId: patient.patientId || patient.id,
                 patientName: patient.patientName || patient.name
             });
             setSelectedPatient(patient);
         } else {
-            setPrescriptionData({
-                ...prescriptionData,
-                patientId: '',
-                patientName: ''
-            });
+            setPrescriptionData(initialPrescriptionState);
         }
         setShowPrescriptionModal(true);
     };
@@ -262,22 +159,13 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
         const newPrescription = {
             ...prescriptionData,
             id: Date.now(),
-            doctor: doctorProfile.name,
+            doctor: DOCTOR_PROFILE.name,
             timestamp: new Date().toISOString()
         };
 
         setPrescriptions([...prescriptions, newPrescription]);
         setShowPrescriptionModal(false);
-        setPrescriptionData({
-            patientId: '',
-            patientName: '',
-            medication: '',
-            dosage: '',
-            frequency: '',
-            duration: '',
-            instructions: '',
-            date: new Date().toISOString().split('T')[0]
-        });
+        setPrescriptionData(initialPrescriptionState); // Reset form
 
         alert(`Prescription for ${newPrescription.medication} created for ${newPrescription.patientName}`);
     };
@@ -285,17 +173,13 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
     const handleOpenMedicalNotes = (patient = null) => {
         if (patient) {
             setMedicalNoteData({
-                ...medicalNoteData,
+                ...initialMedicalNoteState,
                 patientId: patient.patientId || patient.id,
                 patientName: patient.patientName || patient.name
             });
             setSelectedPatient(patient);
         } else {
-            setMedicalNoteData({
-                ...medicalNoteData,
-                patientId: '',
-                patientName: ''
-            });
+            setMedicalNoteData(initialMedicalNoteState);
         }
         setShowMedicalNotesModal(true);
     };
@@ -309,27 +193,13 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
         const newMedicalNote = {
             ...medicalNoteData,
             id: Date.now(),
-            doctor: doctorProfile.name,
+            doctor: DOCTOR_PROFILE.name,
             timestamp: new Date().toISOString()
         };
 
         setMedicalNotes([...medicalNotes, newMedicalNote]);
         setShowMedicalNotesModal(false);
-        setMedicalNoteData({
-            patientId: '',
-            patientName: '',
-            date: new Date().toISOString().split('T')[0],
-            symptoms: '',
-            diagnosis: '',
-            treatment: '',
-            notes: '',
-            vitalSigns: {
-                bloodPressure: '',
-                heartRate: '',
-                temperature: '',
-                weight: ''
-            }
-        });
+        setMedicalNoteData(initialMedicalNoteState); // Reset form
 
         alert(`Medical notes saved for ${newMedicalNote.patientName}`);
     };
@@ -386,12 +256,13 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
                 <div className="doctor-header">
                     <div className="doctor-info">
                         <div className="doctor-avatar">
-                            {doctorProfile.name.split(' ').map(n => n[0]).join('')}
+                            {/* Uses imported DOCTOR_PROFILE */}
+                            {DOCTOR_PROFILE.name.split(' ').map(n => n[0]).join('')}
                         </div>
                         <div>
                             <h1>Doctor Dashboard</h1>
-                            <p>Welcome back, {doctorProfile.name}</p>
-                            <span className="doctor-specialty">{doctorProfile.specialty}</span>
+                            <p>Welcome back, {DOCTOR_PROFILE.name}</p>
+                            <span className="doctor-specialty">{DOCTOR_PROFILE.specialty}</span>
                         </div>
                     </div>
                     <div className="doctor-actions">
@@ -412,17 +283,18 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
 
                 <div className="doctor-profile-card">
                     <div className="profile-details">
+                        {/* Uses imported DOCTOR_PROFILE */}
                         <div className="detail-row">
-                            <strong>Email:</strong> {doctorProfile.email}
+                            <strong>Email:</strong> {DOCTOR_PROFILE.email}
                         </div>
                         <div className="detail-row">
-                            <strong>Phone:</strong> {doctorProfile.phone}
+                            <strong>Phone:</strong> {DOCTOR_PROFILE.phone}
                         </div>
                         <div className="detail-row">
-                            <strong>Office:</strong> {doctorProfile.office}
+                            <strong>Office:</strong> {DOCTOR_PROFILE.office}
                         </div>
                         <div className="detail-row">
-                            <strong>Schedule:</strong> {doctorProfile.schedule}
+                            <strong>Schedule:</strong> {DOCTOR_PROFILE.schedule}
                         </div>
                     </div>
                 </div>
@@ -502,6 +374,8 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
                     )}
                 </div>
 
+                {/* --- Modals --- */}
+
                 <PrescriptionModal
                     showPrescriptionModal={showPrescriptionModal}
                     setShowPrescriptionModal={setShowPrescriptionModal}
@@ -526,7 +400,8 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
                     setNewAppointmentDate={setNewAppointmentDate}
                     newAppointmentTime={newAppointmentTime}
                     setNewAppointmentTime={setNewAppointmentTime}
-                    availableTimeSlots={availableTimeSlots}
+                    // Uses imported AVAILABLE_TIME_SLOTS
+                    availableTimeSlots={AVAILABLE_TIME_SLOTS} 
                     handleReschedule={handleReschedule}
                 />
 
@@ -536,7 +411,8 @@ const DoctorDashboard = ({ user, onLogout, navigateTo }) => {
                     selectedPatient={selectedPatient}
                     referralData={referralData}
                     setReferralData={setReferralData}
-                    specialistOptions={specialistOptions}
+                    // Uses imported SPECIALIST_OPTIONS
+                    specialistOptions={SPECIALIST_OPTIONS} 
                     handleWriteReferral={handleWriteReferral}
                 />
             </div>

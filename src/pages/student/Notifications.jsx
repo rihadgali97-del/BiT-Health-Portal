@@ -20,7 +20,7 @@ const StudentNotifications = ({ user, navigateTo }) => {
             const data = await notificationService.getNotifications(user.id, 'students');
             setNotifications(data.notifications || []);
         } catch (err) {
-            setError('Failed to load notifications. Please try again.');
+            
             console.error('Error loading notifications:', err);
         } finally {
             setLoading(false);

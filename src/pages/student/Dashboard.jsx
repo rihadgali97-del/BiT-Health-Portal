@@ -497,24 +497,6 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
                     </div>
                 </div>
 
-                {/* Student Profile Quick Info */}
-                <div className="student-profile-card">
-                    <div className="profile-details">
-                        <div className="detail-row">
-                            <strong>Department:</strong> {studentProfile.department}
-                        </div>
-                        <div className="detail-row">
-                            <strong>Year:</strong> {studentProfile.year}
-                        </div>
-                        <div className="detail-row">
-                            <strong>Blood Group:</strong> {studentProfile.bloodGroup}
-                        </div>
-                        <div className="detail-row">
-                            <strong>Allergies:</strong> {studentProfile.allergies}
-                        </div>
-                    </div>
-                </div>
-
                 {/* Navigation Tabs */}
                 <div className="student-tabs">
                     <button

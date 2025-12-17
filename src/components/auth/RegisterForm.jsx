@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import '../../styles/Auth.css';
 
+// --- CONFIGURATION ---
+// IMPORTANT: Ensure this URL matches where your Spring Boot application is running.
+const API_BASE_URL = 'http://localhost:8080/api/users'; 
+
 const RegisterForm = ({ navigateTo, onRegister }) => {
     const [formData, setFormData] = useState({
         fullName: '',
@@ -17,54 +21,47 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
     const [profilePhoto, setProfilePhoto] = useState(null);
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [apiError, setApiError] = useState('');
 
+    // --- Validation Logic (Retained from your original code) ---
     const validateField = (name, value) => {
         switch (name) {
             case 'fullName':
                 if (!value.trim()) return "Full name is required";
                 if (value.trim().length < 3) return "Full name must be at least 3 characters";
                 return "";
-
             case 'studentId':
                 if (!value.trim()) return "Student ID is required";
-                // Allow alphanumeric student IDs (letters and numbers)
                 if (!/^[A-Za-z0-9-]+$/.test(value))
                     return "Student ID can only contain letters, numbers, and hyphens";
                 return "";
-
             case 'age':
                 if (!value) return "Age is required";
                 const ageNum = parseInt(value);
                 if (isNaN(ageNum) || ageNum < 16 || ageNum > 50)
                     return "Age must be a number between 16 and 50";
                 return "";
-
             case 'sex':
                 if (!value) return "Please select your gender";
                 return "";
-
             case 'phoneNumber':
                 if (!value.trim()) return "Phone number is required";
-                // Accept Ethiopian numbers: +251 followed by 7 or 9 digits
                 const cleanPhone = value.replace(/\s/g, '');
                 if (!/^\+251[79]\d{8}$/.test(cleanPhone))
                     return "Phone must be in format: +251 followed by 7 or 9, then 8 more digits";
                 return "";
-
             case 'department':
                 if (!value) return "Please select your department";
                 return "";
-
             case 'yearOfEducation':
                 if (!value) return "Please select your year of education";
                 return "";
-
             case 'email':
                 if (!value.trim()) return "Email is required";
                 if (!/@bdu\.edu\.et$/i.test(value))
                     return "Must use university email (@bdu.edu.et)";
                 return "";
-
             case 'password':
                 if (!value) return "Password is required";
                 if (value.length < 8) return "Password must be at least 8 characters";
@@ -72,86 +69,42 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                 if (!/[!@#$%^&*]/.test(value))
                     return "Password must contain at least one special character (!@#$%^&*)";
                 return "";
-
             case 'confirmPassword':
                 if (!value) return "Please confirm your password";
                 if (value !== formData.password) return "Passwords do not match";
                 return "";
-
             default:
                 return "";
         }
     };
 
+    // --- Handlers ---
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-
+        setFormData(prev => ({ ...prev, [name]: value }));
         if (touched[name]) {
             const error = validateField(name, value);
-            setErrors(prev => ({
-                ...prev,
-                [name]: error
-            }));
+            setErrors(prev => ({ ...prev, [name]: error }));
         }
     };
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        setTouched(prev => ({
-            ...prev,
-            [name]: true
-        }));
-
+        setTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setErrors(prev => ({ ...prev, [name]: error }));
     };
 
     const handlePhotoUpload = (e) => {
         const file = e.target.files[0];
-        if (file) {
-            if (!file.type.startsWith('image/')) {
-                setErrors(prev => ({
-                    ...prev,
-                    profilePhoto: "Please upload an image file"
-                }));
-                return;
-            }
-
-            if (file.size > 5 * 1024 * 1024) {
-                setErrors(prev => ({
-                    ...prev,
-                    profilePhoto: "Image must be less than 5MB"
-                }));
-                return;
-            }
-
-            setProfilePhoto(file);
-            setErrors(prev => ({
-                ...prev,
-                profilePhoto: ""
-            }));
-        }
-    };
-
-    const detectUserType = (email) => {
-        const username = email.split('@')[0].toLowerCase();
-
-        if (username.startsWith('admin') || username.includes('.admin')) return 'admin';
-        if (username.startsWith('dr.') || username.startsWith('doctor') || username.includes('dr.')) return 'doctor';
-        return 'student';
+        // Simplified file upload logic for front-end only
+        setProfilePhoto(file);
+        setErrors(prev => ({ ...prev, profilePhoto: "" }));
     };
 
     const validateForm = () => {
         const newErrors = {};
         let isValid = true;
-
         Object.keys(formData).forEach(key => {
             const error = validateField(key, formData[key]);
             if (error) {
@@ -159,44 +112,72 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                 isValid = false;
             }
         });
-
-        const allTouched = {};
-        Object.keys(formData).forEach(key => {
-            allTouched[key] = true;
-        });
-        setTouched(allTouched);
-
         setErrors(newErrors);
         return isValid;
     };
+    
+    const isFormValid = () => {
+        // Checks client-side validation errors
+        return Object.values(errors).every(error => !error) &&
+               Object.values(formData).every(value => value && value !== '');
+    };
+    
+    const handleBackToLogin = () => {
+        navigateTo('login');
+    };
 
-    const handleSubmit = (e) => {
+    // --- API CONNECTION LOGIC ---
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setApiError(''); // Clear previous API error
 
         if (!validateForm()) {
             alert("Please fix the errors before submitting.");
             return;
         }
-
-        const userData = {
-            ...formData,
-            profilePhoto: profilePhoto,
-            type: detectUserType(formData.email),
-            registrationDate: new Date().toISOString()
+        
+        setLoading(true);
+        
+        // 1. Construct the JSON payload (Must match StudentRegistrationRequest DTO)
+        const payload = {
+            fullName: formData.fullName,
+            email: formData.email,
+            password: formData.password, 
+            phoneNumber: formData.phoneNumber,
+            studentId: formData.studentId,
+            department: formData.department,
+            yearOfEducation: formData.yearOfEducation,
+            // Note: age and sex are not included as they are not fields in your User entity.
         };
 
-        onRegister(userData);
-    };
+        try {
+            const response = await fetch(`${API_BASE_URL}/register/student`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json', // Critical for Spring to read the JSON body
+                },
+                body: JSON.stringify(payload), // Send the data as a JSON string
+            });
 
-    const handleBackToLogin = () => {
-        navigateTo('login');
+            if (response.ok) {
+                // SUCCESS! User is created and saved in the database.
+                const newUser = await response.json();
+                alert(`Registration successful for ${newUser.fullName}! You can now sign in.`);
+                navigateTo('login'); // Redirect to login page
+            } else {
+                // API returned a 4xx or 5xx status (e.g., email already registered)
+                const errorText = await response.text();
+                setApiError(`Registration failed: ${errorText}`);
+            }
+        } catch (error) {
+            // Network failure (e.g., server down, wrong URL, CORS issue)
+            console.error('Network Error:', error);
+            setApiError('Could not connect to the server. Check if the Spring Boot server is running.');
+        } finally {
+            setLoading(false);
+        }
     };
-
-    const isFormValid = () => {
-        return Object.values(errors).every(error => !error) &&
-            Object.values(formData).every(value => value) &&
-            formData.password.length >= 8;
-    };
+    // --- END API CONNECTION LOGIC ---
 
     return (
         <div className="auth-container">
@@ -207,6 +188,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="auth-form">
+                    
                     {/* Profile Photo Upload */}
                     <div className="form-group">
                         <label>Profile Photo (Optional)</label>
@@ -216,10 +198,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             onChange={handlePhotoUpload}
                             className={errors.profilePhoto ? 'error-input' : ''}
                         />
-                        {errors.profilePhoto && (
-                            <div className="error-message">{errors.profilePhoto}</div>
-                        )}
-
+                        {errors.profilePhoto && (<div className="error-message">{errors.profilePhoto}</div>)}
                     </div>
 
                     {/* Full Name */}
@@ -235,9 +214,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.fullName ? 'error-input' : ''}
                         />
-                        {errors.fullName && (
-                            <div className="error-message">{errors.fullName}</div>
-                        )}
+                        {errors.fullName && (<div className="error-message">{errors.fullName}</div>)}
                     </div>
 
                     {/* Student ID */}
@@ -253,12 +230,10 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.studentId ? 'error-input' : ''}
                         />
-                        {errors.studentId && (
-                            <div className="error-message">{errors.studentId}</div>
-                        )}
+                        {errors.studentId && (<div className="error-message">{errors.studentId}</div>)}
                     </div>
 
-                    {/* Age and Sex in one row */}
+                    {/* Age and Sex in one row (Note: Age/Sex fields are for frontend validation only) */}
                     <div className="form-row">
                         <div className="form-group">
                             <label>Age *</label>
@@ -274,9 +249,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                                 required
                                 className={errors.age ? 'error-input' : ''}
                             />
-                            {errors.age && (
-                                <div className="error-message">{errors.age}</div>
-                            )}
+                            {errors.age && (<div className="error-message">{errors.age}</div>)}
                         </div>
                         <div className="form-group">
                             <label>Sex *</label>
@@ -292,9 +265,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
                             </select>
-                            {errors.sex && (
-                                <div className="error-message">{errors.sex}</div>
-                            )}
+                            {errors.sex && (<div className="error-message">{errors.sex}</div>)}
                         </div>
                     </div>
 
@@ -311,9 +282,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.phoneNumber ? 'error-input' : ''}
                         />
-                        {errors.phoneNumber && (
-                            <div className="error-message">{errors.phoneNumber}</div>
-                        )}
+                        {errors.phoneNumber && (<div className="error-message">{errors.phoneNumber}</div>)}
                     </div>
 
                     {/* Department */}
@@ -341,9 +310,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             <option value="IS">Information Systems</option>
                             <option value="cyber-security">Cyber Security</option>
                         </select>
-                        {errors.department && (
-                            <div className="error-message">{errors.department}</div>
-                        )}
+                        {errors.department && (<div className="error-message">{errors.department}</div>)}
                     </div>
 
                     {/* Year of Education */}
@@ -364,9 +331,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             <option value="4">4th Year</option>
                             <option value="5">5th Year</option>
                         </select>
-                        {errors.yearOfEducation && (
-                            <div className="error-message">{errors.yearOfEducation}</div>
-                        )}
+                        {errors.yearOfEducation && (<div className="error-message">{errors.yearOfEducation}</div>)}
                     </div>
 
                     {/* Email */}
@@ -382,9 +347,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.email ? 'error-input' : ''}
                         />
-                        {errors.email && (
-                            <div className="error-message">{errors.email}</div>
-                        )}
+                        {errors.email && (<div className="error-message">{errors.email}</div>)}
                     </div>
 
                     {/* Password */}
@@ -400,9 +363,7 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.password ? 'error-input' : ''}
                         />
-                        {errors.password && (
-                            <div className="error-message">{errors.password}</div>
-                        )}
+                        {errors.password && (<div className="error-message">{errors.password}</div>)}
                     </div>
 
                     {/* Confirm Password */}
@@ -418,17 +379,22 @@ const RegisterForm = ({ navigateTo, onRegister }) => {
                             required
                             className={errors.confirmPassword ? 'error-input' : ''}
                         />
-                        {errors.confirmPassword && (
-                            <div className="error-message">{errors.confirmPassword}</div>
-                        )}
+                        {errors.confirmPassword && (<div className="error-message">{errors.confirmPassword}</div>)}
                     </div>
+                    
+                    {/* API Error Message Display */}
+                    {apiError && (
+                        <div className="error-message" style={{ color: 'red', fontWeight: 'bold' }}>
+                            {apiError}
+                        </div>
+                    )}
 
                     <button
                         type="submit"
                         className="auth-btn"
-                        disabled={!isFormValid()}
+                        disabled={!isFormValid() || loading} // Disable if validation fails or loading
                     >
-                        Create My Account
+                        {loading ? 'Creating Account...' : 'Create My Account'}
                     </button>
                 </form>
 

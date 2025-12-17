@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Home from './pages/common/Home';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
-import StudentDashboard from './pages/student/Dashboard';
+import StudentDashboard from './pages/student/dashboardaftersplitted';
 import BookAppointment from './pages/student/BookAppointment';
 import HealthRecords from './pages/student/HealthRecords';
 import MyAppointments from './pages/student/MyAppointments';
@@ -30,14 +30,12 @@ function App() {
     const [currentPage, setCurrentPage] = useState('home');
     const [user, setUser] = useState(null);
 
-    // NOTE: Removed the redundant detectUserType function from App.js
-    // as the role is now determined by the LoginForm component.
 
     const handleLogin = (userData) => {
         console.log('🔐 Login received:', userData);
         setUser(userData);
 
-        // 💡 THE FIX: Use the 'type' property that the LoginForm calculated
+        // 💡  Use the 'type' property that the LoginForm calculated
         const userType = userData.type; 
         
         if (!userType) {
@@ -102,11 +100,15 @@ function App() {
             case 'pharmacist-dashboard':
                 return <PharmacistDashboard {...commonProps} />;
             case 'lab-technician-dashboard':
-                return <LabTechnicianDashboard {...commonProps} />;
-            // --- END DASHBOARDS ---
+                return <LabTechnicianDashboard {...commonProps} />
                 
             case 'book-appointment':
-                return <BookAppointment {...commonProps} />;
+    return <BookAppointment 
+        {...commonProps} 
+        currentStudentId={user?.id || user?.studentId} // Use user ID from state
+        // Pass a specific handler to go back
+        handleBackToDashboard={() => setCurrentPage('student-dashboard')}
+    />;
             case 'health-records':
                 return <HealthRecords {...commonProps} />;
             case 'my-appointments':

@@ -8,16 +8,26 @@ import MyAppointments from '../../components/student/MyAppointments';
 import BookAppointment from '../../components/student/BookAppointment';
 import HealthRecords from '../../components/student/HealthRecords';
 
+// 1. IMPORT THE SAMPLE DATA FROM sampleData.js
+import {
+    studentProfileData,
+    appointmentsData,
+    healthRecordsData,
+    availableDoctorsData,
+    availableTimeSlotsData
+} from '../../Data/sampleData'; // Assuming sampleData.js is in the same directory
+
+
 const StudentDashboard = ({ user, onLogout, navigateTo }) => {
     const [activeTab, setActiveTab] = useState('overview');
     const [searchTerm, setSearchTerm] = useState('');
     const [showBookingModal, setShowBookingModal] = useState(false);
 
-    // State for backend data
-    const [appointments, setAppointments] = useState([]);
-    const [healthRecords, setHealthRecords] = useState([]);
-    const [availableDoctors, setAvailableDoctors] = useState([]);
-    const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+    // 2. INITIALIZE STATE WITH IMPORTED SAMPLE DATA
+    const [appointments, setAppointments] = useState(appointmentsData);
+    const [healthRecords, setHealthRecords] = useState(healthRecordsData);
+    const [availableDoctors, setAvailableDoctors] = useState(availableDoctorsData);
+    const [availableTimeSlots, setAvailableTimeSlots] = useState(availableTimeSlotsData);
 
     const [bookingData, setBookingData] = useState({
         date: '',
@@ -27,20 +37,21 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
         doctorId: ''
     });
 
-    // Use the actual user data from registration
+    // 3. Use the actual user data from registration, falling back to sample data
     const studentProfile = user ? {
-        name: user.fullName,
-        studentId: user.studentId,
-        email: user.email,
-        phone: user.phoneNumber,
-        department: user.department,
-        year: user.yearOfEducation ? `${user.yearOfEducation}${getOrdinalSuffix(user.yearOfEducation)} Year` : '',
-        age: user.age,
-        sex: user.sex,
-        bloodGroup: user.bloodGroup || 'Not specified',
-        allergies: user.allergies || 'None',
-        emergencyContact: user.emergencyContact || 'Not specified'
-    } : {};
+        // Use user.id from the authentication/registration response as the definitive ID
+        studentId: user.id || user.studentId, // Ensure the correct ID is pulled
+        name: user.fullName || studentProfileData.name,
+        email: user.email || studentProfileData.email,
+        phone: user.phoneNumber || studentProfileData.phone,
+        department: user.department || studentProfileData.department,
+        year: user.yearOfEducation ? `${user.yearOfEducation}${getOrdinalSuffix(user.yearOfEducation)} Year` : studentProfileData.year,
+        age: user.age || studentProfileData.age,
+        sex: user.sex || studentProfileData.sex,
+        bloodGroup: user.bloodGroup || studentProfileData.bloodGroup,
+        allergies: user.allergies || studentProfileData.allergies,
+        emergencyContact: user.emergencyContact || studentProfileData.emergencyContact
+    } : studentProfileData; // Use full sample data if 'user' prop is undefined
 
     // Helper function to get ordinal suffix
     function getOrdinalSuffix(year) {
@@ -57,7 +68,7 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
         apt.reason?.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Booking functionality
+    // --- OLD MODAL BOOKING LOGIC (Keep for now, but will be bypassed) ---
     const handleOpenBooking = () => {
         setBookingData({
             date: '',
@@ -78,7 +89,7 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
         // This will be replaced with API call
         const newAppointment = {
             id: Date.now(), // Temporary ID, backend will generate
-            doctorName: 'Doctor Name', // Will come from backend
+            doctorName: 'Dr. Sarah Johnson (Demo Booked)', // Example doctor name
             date: bookingData.date,
             time: bookingData.time,
             status: 'scheduled',
@@ -91,6 +102,7 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
         setShowBookingModal(false);
         alert(`Appointment booked for ${bookingData.date} at ${bookingData.time}`);
     };
+    // --------------------------------------------------------------------
 
     const handleCancelAppointment = (appointmentId) => {
         // This will be replaced with API call
@@ -192,13 +204,17 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
                             handleBackToDashboard={handleBackToDashboard}
                         />
                     )}
+                    {/* 👇 CRITICAL FIX APPLIED HERE 👇 */}
                     {activeTab === 'book-appointment' && (
                         <BookAppointment
                             availableDoctors={availableDoctors}
-                            handleOpenBooking={handleOpenBooking}
+                            // *** PASS THE STUDENT ID (CRITICAL) ***
+                            currentStudentId={studentProfile.studentId} 
+                            // *** REMOVED: handleOpenBooking (It was causing flow confusion) ***
                             handleBackToDashboard={handleBackToDashboard}
                         />
                     )}
+                    {/* 👆 CRITICAL FIX APPLIED HERE 👆 */}
                     {activeTab === 'health-records' && (
                         <HealthRecords
                             healthRecords={healthRecords}
@@ -207,6 +223,7 @@ const StudentDashboard = ({ user, onLogout, navigateTo }) => {
                     )}
                 </div>
 
+                {/* NOTE: BookingModal is likely obsolete now, as BookAppointment handles the full flow */}
                 <BookingModal
                     showBookingModal={showBookingModal}
                     setShowBookingModal={setShowBookingModal}
